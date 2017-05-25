@@ -1,6 +1,8 @@
 module Main where
 
-import Lib
+import NWA
 
 main :: IO ()
-main = someFunc
+main = case exec (new (State 1) [] [(State 1)]) "" of
+    (Left err) -> putStrLn err
+    (Right b) -> putStrLn (show b)
