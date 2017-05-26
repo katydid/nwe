@@ -1,4 +1,4 @@
-module NWASpec where
+module NWASpec (nwatests) where
 
 import qualified Test.HUnit as HUnit
 import NWA

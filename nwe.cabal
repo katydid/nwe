@@ -16,8 +16,10 @@ cabal-version:       >=1.10
 library
   hs-source-dirs:      src
   exposed-modules:     NWA
+                     , HTML
   build-depends:       base >= 4.7 && < 5
                      , containers
+                     , tagsoup
   default-language:    Haskell2010
 
 executable nwe-exe
