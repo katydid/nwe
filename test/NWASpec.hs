@@ -4,11 +4,11 @@ import qualified Test.HUnit as HUnit
 import NWA
 import Control.Monad (unless)
 
-newtest :: String -> (State, [Transition], [State]) -> String -> Bool -> HUnit.Test
+newtest :: (Show a, Eq a, Ord a) => String -> (State, [Transition a], [State]) -> [a] -> Bool -> HUnit.Test
 newtest name (start, trans, finals) input want = HUnit.TestLabel name $ HUnit.TestCase $ case new start trans finals of
     (Left err) -> HUnit.assertFailure $ "given input: " ++ show (start, trans, finals) ++ " got error: " ++ show err
     (Right auto) -> case exec auto input of
-        (Left err) -> HUnit.assertFailure $ "given input: " ++ input ++ " got error: " ++ show err
+        (Left err) -> HUnit.assertFailure $ "given input: " ++ show input ++ " got error: " ++ show err
         (Right got) -> unless (got == want) $ HUnit.assertFailure $ "want: " ++ show want ++ " got: " ++ show got
 
 start = State 1
