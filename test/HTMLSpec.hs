@@ -14,5 +14,6 @@ htmltests = HUnit.TestList [
     newtest "<a><b>a</c>" ["<a>", "<b>", "a", "</c>"],
     newtest "<A a=b></A>" ["<A>", "a=b", "</A>"],
     newtest "<a/>" ["<a>", "</a>"],
+    newtest "<a>a\na</a>" ["<a>", "a\na", "</a>"],
 
     HUnit.TestCase (return ())]
