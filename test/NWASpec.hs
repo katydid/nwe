@@ -28,7 +28,10 @@ paren = (start, [
     (Call failed '(' (open, failed)),
     (Return (bottom, failed) ')' failed),
     (Return (first, failed) ')' failed),
-    (Return (open, failed) ')' failed)], [start])
+    (Return (open, failed) ')' failed),
+    (Internal start 'a' start),
+    (Internal failed 'a' failed),
+    (Internal opened 'a' opened)], [start])
     
 
 nwatests = HUnit.TestList [
@@ -43,5 +46,15 @@ nwatests = HUnit.TestList [
     newtest "open open close close paren" paren "(())" True,
     newtest "open open open close close paren" paren "((())" False,
     newtest "open close open close paren" paren "()()" True,
+
+    newtest "with letters open close paren" paren "(a)" True,
+    newtest "with letters open paren" paren "a(a" False,
+    newtest "with letters close paren" paren ")aa" False,
+    newtest "with letters two open paren" paren "((a" False,
+    newtest "with letters close paren" paren "a)" False,
+    newtest "with letters two close paren" paren "a)a)" False,
+    newtest "with letters open open close close paren" paren "aa(a(a)aaa)aa" True,
+    newtest "with letters open open open close close paren" paren "a(a(a(aaaaa)aaaa)" False,
+    newtest "with letters open close open close paren" paren "(a)aaaaa()" True,
 
     HUnit.TestCase (return ())]
