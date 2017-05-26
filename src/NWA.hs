@@ -1,5 +1,5 @@
 module NWA
-    ( new, exec, NWA, State(..), Symbol(..), Transition(..), bottom
+    ( new, exec, NWA, State(..), Symbol(..), Transition(..)
     ) where
 
 import qualified Data.Set as DataSet
@@ -7,11 +7,12 @@ import qualified Data.Set as DataSet
 newtype State = State Int
     deriving (Eq, Ord, Show)
 
-newtype Symbol = Symbol Int
+data Symbol = Symbol Int
+    | Bottom
     deriving (Eq, Ord, Show)
 
 pop :: [Symbol] -> [Symbol]
-pop [s] = [s]
+pop [Bottom] = [Bottom]
 pop (_:ss) = ss
 
 push :: Symbol -> [Symbol] -> [Symbol]
@@ -27,14 +28,11 @@ data Transition = Internal State Char State
 
 data NWA = NWA State [Transition] [State] [Symbol]
 
-bottom :: Symbol
-bottom = Symbol 0
-
 new :: State -> [Transition] -> [State] -> Either String NWA
 new start trans finals = case validateTrans trans of 
     (Just err) -> Left err
     Nothing -> if startExists start trans finals
-        then Right $ NWA start trans finals [(Symbol 0)]
+        then Right $ NWA start trans finals [Bottom]
         else Left $ "start state does not exist: " ++ show start
 
 chars :: [Transition] -> (DataSet.Set Char, DataSet.Set Char, DataSet.Set Char)
@@ -63,7 +61,7 @@ startExists :: State -> [Transition] -> [State] -> Bool
 startExists start [] fs = start `elem` fs
 startExists start ((Internal s _ _):ts) fs = s == start || startExists start ts fs
 startExists start ((Call s _ _):ts) fs = s == start || startExists start ts fs
-startExists start ((Return (s', s) _ _):ts) fs = (s' == bottom && s == start) || startExists start ts fs
+startExists start ((Return (s', s) _ _):ts) fs = (s' == Bottom && s == start) || startExists start ts fs
 
 exec :: NWA -> String -> Either String Bool
 exec (NWA start trans finals stack) input = case run stack start trans input of

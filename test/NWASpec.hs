@@ -21,12 +21,12 @@ open = Symbol 2
 
 paren = (start, [
     (Call start '(' (first, opened)),
-    (Return (bottom, start) ')' failed),
+    (Return (Bottom, start) ')' failed),
     (Call opened '(' (open, opened)),
     (Return (open, opened) ')' opened),
     (Return (first, opened) ')' start),
     (Call failed '(' (open, failed)),
-    (Return (bottom, failed) ')' failed),
+    (Return (Bottom, failed) ')' failed),
     (Return (first, failed) ')' failed),
     (Return (open, failed) ')' failed),
     (Internal start 'a' start),
