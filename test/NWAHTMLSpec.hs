@@ -33,6 +33,21 @@ paren = (start, [
     (Internal failed "a" failed),
     (Internal opened "a" opened)], [start])  
 
+alpha = Symbol 1
+beta = Symbol 2
+gamma = Symbol 3
+
+-- example from VPAs vs Tree Automata in the slides of Language Automata and Logic for Finite Trees - Oliver Gauwin
+exampleOliver = (State 0, [
+    (Call (State 0) "<a>" (alpha, State 1)),
+    (Call (State 1) "<a>" (beta, State 1)),
+    (Call (State 1) "<b>" (beta, State 4)),
+    (Return (gamma, State 4) "</b>" (State 3)),
+    (Return (beta, State 4) "</b>" (State 3)),
+    (Return (beta, State 3) "</a>" (State 2)),
+    (Return (alpha, State 3) "</a>" (State 5)),
+    (Call (State 2) "<b>" (gamma, State 4))], [State 5])
+
 nwahtmltests = HUnit.TestList [
     newtest "open close paren" paren "<a></a>" True,
     newtest "open paren" paren "<a>" False,
@@ -53,5 +68,7 @@ nwahtmltests = HUnit.TestList [
     newtest "with letters open open close close paren" paren "a<a>a<a>a</a>a</a>a" True,
     newtest "with letters open open open close close paren" paren "a<a>a<a>a<a>a</a>a</a>" False,
     newtest "with letters open close open close paren" paren "<a>a</a>a<a></a>" True,
+
+    newtest "example from Oliver Gauwin" exampleOliver "<a><a><b></b></a><b></b></a>" True,
 
     HUnit.TestCase (return ())]
