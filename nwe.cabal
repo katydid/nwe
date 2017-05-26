@@ -35,6 +35,8 @@ test-suite nwe-test
   hs-source-dirs:      test
   main-is:             Spec.hs
   other-modules:       NWASpec
+                     , HTMLSpec
+                     , NWAHTMLSpec
   build-depends:       base
                      , nwe
                      , HUnit

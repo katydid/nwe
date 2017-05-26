@@ -18,7 +18,6 @@ opened = State 3
 first = Symbol 1
 open = Symbol 2
 
-
 paren = (start, [
     (Call start '(' (first, opened)),
     (Return (Bottom, start) ')' failed),
@@ -31,8 +30,7 @@ paren = (start, [
     (Return (open, failed) ')' failed),
     (Internal start 'a' start),
     (Internal failed 'a' failed),
-    (Internal opened 'a' opened)], [start])
-    
+    (Internal opened 'a' opened)], [start])  
 
 nwatests = HUnit.TestList [
     newtest "no transitions or input" ((State 1), [], [(State 1)]) "" True,

@@ -19,7 +19,6 @@ opened = State 3
 first = Symbol 1
 open = Symbol 2
 
-
 paren = (start, [
     (Call start "<a>" (first, opened)),
     (Return (Bottom, start) "</a>" failed),
@@ -32,8 +31,7 @@ paren = (start, [
     (Return (open, failed) "</a>" failed),
     (Internal start "a" start),
     (Internal failed "a" failed),
-    (Internal opened "a" opened)], [start])
-    
+    (Internal opened "a" opened)], [start])  
 
 nwahtmltests = HUnit.TestList [
     newtest "open close paren" paren "<a></a>" True,
