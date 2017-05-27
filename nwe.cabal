@@ -17,6 +17,9 @@ library
   hs-source-dirs:      src
   exposed-modules:     NWA
                      , HTML
+                     , Grammar
+                     , Deriv
+                     , Simplify
   build-depends:       base >= 4.7 && < 5
                      , containers
                      , tagsoup
