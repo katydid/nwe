@@ -10,7 +10,7 @@ deriv refs (stack, current) input
         let (symbol, next) = deriveCall refs current input 
         in (Stack.push (Stack.Symbol symbol) stack, next)
     | isReturn input = case Stack.peek stack of
-        Stack.Bottom -> undefined
+        Stack.Bottom -> undefined -- TODO
         (Stack.Symbol symbol) ->    let next = deriveReturn refs (symbol, current) input 
                                     in (Stack.pop stack, next)
     | otherwise = 
@@ -19,10 +19,10 @@ deriv refs (stack, current) input
           isReturn = newIsReturn refs current
 
 newIsCall :: Refs a -> [Expr a] -> (a -> Bool)
-newIsCall = undefined
+newIsCall = undefined -- TODO
 
 newIsReturn :: Refs a -> [Expr a] -> (a -> Bool)
-newIsReturn = undefined
+newIsReturn = undefined -- TODO
 
 type State a = [Expr a]
 type Symbol a = [Expr a]
@@ -45,7 +45,9 @@ evalIfExpr (v, thn, els) a = if v == a then thn else els
 derivCall :: Refs a -> Expr a -> [IfExpr a]
 derivCall _ Empty = []
 derivCall _ EmptySet = []
+derivCall _ (Internal _) = undefined -- TODO
 derivCall _ (Call v e) = [(v, e, EmptySet)]
+derivCall _ (Return _) = undefined -- TODO
 derivCall refs (Concat l r) = if nullable refs l
     then derivCall refs l ++ derivCall refs r
     else derivCall refs l
@@ -68,6 +70,8 @@ derivReturns refs input (e:tailes, ns) =
 derivReturn :: (Eq a) => Refs a -> a -> Expr a -> [Bool] -> (Expr a, [Bool])
 derivReturn _ _ Empty ns = (EmptySet, ns)
 derivReturn _ _ EmptySet ns = (EmptySet, ns)
+derivReturn _ _ (Internal _) _ = undefined -- TODO
+derivReturn _ _ (Call _ _) _ = undefined -- TODO
 derivReturn _ input (Return v) ns = if head ns 
     then (evalIfExpr (input, Empty, EmptySet) v, tail ns)
     else (EmptySet, tail ns)
