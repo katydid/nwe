@@ -6,11 +6,13 @@ import Grammar
 
 simplify :: (Show a, Ord a) => Refs a -> Expr a -> Expr a
 simplify refs expr =
-	let simp = simplify' refs
-	in case expr of
+    let simp = simplify' refs
+    in case expr of
 	Empty -> Empty
 	EmptySet -> EmptySet
-	(Node v e) -> Node v (simp e)
+	(Internal v) -> Internal v
+	(Call v e) -> Call v e
+	(Return v) -> Return v
  	(Concat e1 e2) -> simplifyConcat (simp e1) (simp e2)
  	(Or e1 e2) -> simplifyOr refs (simp e1) (simp e2)
  	(And e1 e2) -> simplifyAnd refs (simp e1) (simp e2)
@@ -42,15 +44,7 @@ simplifyOr _ (Not EmptySet) _ = (Not EmptySet)
 simplifyOr _ _ (Not EmptySet) = (Not EmptySet)
 simplifyOr refs Empty e = if nullable refs e then e else Or Empty e
 simplifyOr refs e Empty = if nullable refs e then e else Or Empty e
-simplifyOr _ e1 e2 = bin Or $ simplifyChildren Or $ DataSet.toAscList $ setOfOrs e1 `DataSet.union` setOfOrs e2
-
-simplifyChildren :: (Eq a) => (Expr a -> Expr a -> Expr a) -> [Expr a] -> [Expr a]
-simplifyChildren _ [] = []
-simplifyChildren _ [e] = [e]
-simplifyChildren op (e1@(Node v1 c1):(e2@(Node v2 c2):es))
-	| v1 == v2 = simplifyChildren op $ Node v1 (op c1 c2):es
-	| otherwise = e1:simplifyChildren op (e2:es)
-simplifyChildren op (e:es) = e:simplifyChildren op es
+simplifyOr _ e1 e2 = bin Or $ DataSet.toAscList $ setOfOrs e1 `DataSet.union` setOfOrs e2
 
 bin :: (Expr a -> Expr a -> Expr a) -> [Expr a] -> Expr a
 bin op [e] = e
@@ -68,7 +62,7 @@ simplifyAnd _ (Not EmptySet) e = e
 simplifyAnd _ e (Not EmptySet) = e
 simplifyAnd refs Empty e = if nullable refs e then Empty else EmptySet
 simplifyAnd refs e Empty = if nullable refs e then Empty else EmptySet
-simplifyAnd _ e1 e2 = bin And $ simplifyChildren And $ DataSet.toAscList $ setOfAnds e1 `DataSet.union` setOfAnds e2
+simplifyAnd _ e1 e2 = bin And $ DataSet.toAscList $ setOfAnds e1 `DataSet.union` setOfAnds e2
 
 setOfAnds :: (Ord a) => Expr a -> DataSet.Set (Expr a)
 setOfAnds (And e1 e2) = setOfAnds e1 `DataSet.union` setOfAnds e2

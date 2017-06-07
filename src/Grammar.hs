@@ -5,7 +5,9 @@ import qualified Data.Set as DataSet
 
 data Expr a = Empty
     | EmptySet
-    | Node a (Expr a)
+    | Internal a
+    | Call a (Expr a)
+    | Return a
     | Or (Expr a) (Expr a)
     | And (Expr a) (Expr a)
     | Not (Expr a)
@@ -35,7 +37,9 @@ data Expr a = Empty
 nullable :: Refs a -> Expr a -> Bool
 nullable _ Empty = True
 nullable _ EmptySet = False
-nullable _ (Node _ _) = False
+nullable _ (Internal _ ) = False
+nullable _ (Call _ _) = False
+nullable _ (Return _ ) = False
 nullable refs (Or l r) = nullable refs l || nullable refs r
 nullable refs (And l r) = nullable refs l && nullable refs r
 nullable refs (Not p) = not $ nullable refs p
@@ -79,7 +83,9 @@ hasRecursion refs = hasRec refs (DataSet.singleton "main") (lookupRef refs "main
 hasRec :: Refs a -> DataSet.Set String -> Expr a -> Bool
 hasRec _ _ Empty = False
 hasRec _ _ EmptySet = False
-hasRec _ _ (Node _ _) = False
+hasRec _ _ (Internal _) = False
+hasRec _ _ (Call _ _) = False
+hasRec _ _ (Return _) = False
 hasRec refs set (Or l r) = hasRec refs set l || hasRec refs set r
 hasRec refs set (And l r) = hasRec refs set l || hasRec refs set r
 hasRec refs set (Not p) = hasRec refs set p

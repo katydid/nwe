@@ -20,6 +20,7 @@ library
                      , Grammar
                      , Deriv
                      , Simplify
+                     , Stack
   build-depends:       base >= 4.7 && < 5
                      , containers
                      , tagsoup
