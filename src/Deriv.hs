@@ -1,8 +1,9 @@
 module Deriv where
 
-import Grammar
+import Grammar 
 import Simplify
 import qualified Stack as Stack
+import qualified Data.Set as DataSet
 
 deriv :: (Eq a, Show a, Ord a) => Refs a -> (Stack.Stack (Symbol a), State a) -> a -> (Stack.Stack (Symbol a), State a)
 deriv refs (stack, current) input
@@ -10,7 +11,7 @@ deriv refs (stack, current) input
         let (symbol, next) = deriveCall refs current input 
         in (Stack.push (Stack.Symbol symbol) stack, next)
     | isReturn input = case Stack.peek stack of
-        Stack.Bottom -> undefined -- TODO
+        Stack.Bottom -> undefined -- TODO wat!
         (Stack.Symbol symbol) ->    let next = deriveReturn refs (symbol, current) input 
                                     in (Stack.pop stack, next)
     | otherwise = 
@@ -19,10 +20,20 @@ deriv refs (stack, current) input
           isReturn = newIsReturn refs current
 
 newIsCall :: Refs a -> [Expr a] -> (a -> Bool)
-newIsCall = undefined -- TODO
+newIsCall = undefined -- TODO easy
+
+union' :: (Ord a) => (DataSet.Set a, DataSet.Set a, DataSet.Set a) -> (DataSet.Set a, DataSet.Set a, DataSet.Set a) -> (DataSet.Set a, DataSet.Set a, DataSet.Set a)
+union' (a, b, c) (a', b', c') = (DataSet.union a a', DataSet.union b b', DataSet.union c c')
+
+getInputs :: (Ord a) => Refs a -> Expr a -> (DataSet.Set a, DataSet.Set a, DataSet.Set a)
+getInputs refs Empty = (DataSet.empty, DataSet.empty, DataSet.empty)
+getInputs refs EmptySet = (DataSet.empty, DataSet.empty, DataSet.empty)
+getInputs refs (Internal v) = (DataSet.singleton v, DataSet.empty, DataSet.empty)
+getInputs refs (Call v e) = (DataSet.empty, DataSet.singleton v, DataSet.empty) `union'` getInputs refs e
+-- TODO easy: complete this function and use it for determinig whether to call deriveCall or deriveReturn
 
 newIsReturn :: Refs a -> [Expr a] -> (a -> Bool)
-newIsReturn = undefined -- TODO
+newIsReturn = undefined -- TODO easy
 
 type State a = [Expr a]
 type Symbol a = [Expr a]
@@ -46,7 +57,7 @@ derivCall :: Refs a -> Expr a -> [IfExpr a]
 derivCall _ Empty = []
 derivCall _ EmptySet = []
 derivCall _ (Internal _) = undefined -- TODO
-derivCall _ (Call v e) = [(v, e, EmptySet)]
+derivCall _ (Call v e) = [(v, e, EmptySet)] -- TODO this is totally broken
 derivCall _ (Return _) = undefined -- TODO
 derivCall refs (Concat l r) = if nullable refs l
     then derivCall refs l ++ derivCall refs r
@@ -72,7 +83,7 @@ derivReturn _ _ Empty ns = (EmptySet, ns)
 derivReturn _ _ EmptySet ns = (EmptySet, ns)
 derivReturn _ _ (Internal _) _ = undefined -- TODO
 derivReturn _ _ (Call _ _) _ = undefined -- TODO
-derivReturn _ input (Return v) ns = if head ns 
+derivReturn _ input (Return v) ns = if head ns -- TODO this is totally broken
     then (evalIfExpr (input, Empty, EmptySet) v, tail ns)
     else (EmptySet, tail ns)
 derivReturn refs input (Concat l r) ns = 
